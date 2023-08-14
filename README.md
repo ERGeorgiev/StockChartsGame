@@ -8,7 +8,7 @@ This project uses Angular, [Chart.js](https://github.com/chartjs/chartjs-chart-f
 
 Based on the [Stock.Charts](https://www.github.com/DaveSkender/Stock.Charts) project.  
 
-## Running this demo locally
+## How To Play
 
 If you want to host on your local computer and review the source code, follow the instructions below.
 
