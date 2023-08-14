@@ -5,6 +5,8 @@ namespace StockChartsGame.Providers.Services;
 
 public abstract class Provider : IProvider
 {
+    public virtual string Name => GetType().Name;
+
     public abstract string[] Symbols { get; }
 
     public static async Task<HttpContent> QueryAsync<T>(Uri uri)

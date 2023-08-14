@@ -20,7 +20,7 @@ public class GameService : IGameService
 
     public GameService(IEnumerable<IProvider> providers, IOptions<ChartOptions> chartOptions)
     {
-        this.provider = providers.Single(p => p.GetType().Name == nameof(AlphaVantageClient));
+        this.provider = providers.Single(p => p.Name == nameof(AlphaVantageClient));
         this.chartOptions = chartOptions.Value;
     }
 
@@ -51,7 +51,7 @@ public class GameService : IGameService
         {
             if (quoteFrame == null || lastFetch.IsRunning == false || lastFetch.Elapsed > TimeSpan.FromSeconds(20))
             {
-                quoteFrame = QuoteFrame.Create(provider).Result;
+                quoteFrame = QuoteFrame.Create(provider, chartOptions).Result;
                 lastFetch.Restart();
                 Revealed = false;
             }

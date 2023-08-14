@@ -33,6 +33,39 @@ public class QuoteTimeSeriesTests
     }
 
     [Fact]
+    public void Constructor_InputWithGaps_DoesNotFillMissingDays()
+    {
+        var period = TimeSpan.FromSeconds(1);
+        var input = new List<IQuote>() {
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue),
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + (period * 4)),
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + (period * 9)),
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + TimeSpan.FromDays(10)),
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + TimeSpan.FromDays(10) + (period * 3)),
+        };
+        var expectedResult = new List<IQuote>() {
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue),
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + (period * 1)),
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + (period * 2)),
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + (period * 3)),
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + (period * 4)),
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + (period * 5)),
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + (period * 6)),
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + (period * 7)),
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + (period * 8)),
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + (period * 9)),
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + TimeSpan.FromDays(10)),
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + TimeSpan.FromDays(10) + (period * 1)),
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + TimeSpan.FromDays(10) + (period * 2)),
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + TimeSpan.FromDays(10) + (period * 3)),
+        };
+
+        var result = new QuoteTimeSeries(input, period);
+
+        result.Should().BeEquivalentTo(expectedResult);
+    }
+
+    [Fact]
     public void Constructor_InputWithGapsUnevenPeriod_FillsGaps()
     {
         var period = TimeSpan.FromSeconds(2);
