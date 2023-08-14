@@ -11,7 +11,7 @@ namespace StockChartsGame.Framework.Services;
 
 public class GameService : IGameService
 {
-    private readonly object _lock = new();
+    private readonly object quoteFrameLock = new();
     private readonly IProvider provider;
     private readonly Stopwatch lastFetch = new();
     private readonly Random rnd = new();
@@ -29,12 +29,15 @@ public class GameService : IGameService
 
     public IEnumerable<Quote> GetQuotes()
     {
-        if (quoteFrame == null) RefreshQuotes();
-        Guard.Against.NullOrEmpty(quoteFrame, nameof(quoteFrame));
+        lock (quoteFrameLock)
+        {
+            if (quoteFrame == null) RefreshQuotes();
+            Guard.Against.NullOrEmpty(quoteFrame, nameof(quoteFrame));
 
-        if (Revealed) return quoteFrame;
+            if (Revealed) return quoteFrame;
 
-        return quoteFrame.Take(quoteFrame.Count() - chartOptions.HiddenItemsCount);
+            return quoteFrame.Take(quoteFrame.Count() - chartOptions.HiddenItemsCount);
+        }
     }
 
     public void RevealHiddenQuotes()
@@ -44,14 +47,18 @@ public class GameService : IGameService
 
     public void RefreshQuotes()
     {
-        lock (_lock)
+        lock (quoteFrameLock)
         {
-            if (lastFetch.IsRunning == false || lastFetch.Elapsed > TimeSpan.FromSeconds(20))
+            if (quoteFrame == null || lastFetch.IsRunning == false || lastFetch.Elapsed > TimeSpan.FromSeconds(20))
             {
                 quoteFrame = QuoteFrame.Create(provider).Result;
                 lastFetch.Restart();
+                Revealed = false;
             }
-            Revealed = false;
+            else
+            {
+                quoteFrame.Refresh();
+            }
         }
     }
 }
