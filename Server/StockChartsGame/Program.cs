@@ -2,7 +2,7 @@
 using StockChartsGame.Providers.AlphaVantage.Configuration;
 using StockChartsGame.Providers.AlphaVantage.Services;
 using StockChartsGame.Providers.Services;
-using WebApi.Framework.Services;
+using StockChartsGame.Framework.Services;
 
 Environment.SetEnvironmentVariable("Browser", "none");
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);

@@ -17,9 +17,8 @@ public class AlphaVantageClient : Provider
     private const string domain = "https://www.alphavantage.co";
     private const string intervalString = "1min";
     private static readonly TimeSpan interval = TimeSpan.FromMinutes(1);
-
-    public readonly AlphaVantageOptions options;
-    public readonly ILogger<AlphaVantageClient> logger;
+    private readonly ILogger<AlphaVantageClient> logger;
+    private readonly AlphaVantageOptions options;
 
     public AlphaVantageClient(IOptions<AlphaVantageOptions> options, ILogger<AlphaVantageClient> logger)
     {

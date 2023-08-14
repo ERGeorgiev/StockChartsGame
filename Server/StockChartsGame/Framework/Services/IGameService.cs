@@ -1,11 +1,12 @@
 using Skender.Stock.Indicators;
 
-namespace WebApi.Framework.Services;
+namespace StockChartsGame.Framework.Services;
 
 public interface IGameService
 {
-    string Stock { get; }
-    Task<IEnumerable<Quote>> Get();
-    Task Refresh();
-    Task Reveal();
+    string? Symbol { get; }
+    bool Revealed { get; }
+    IEnumerable<Quote> GetQuotes();
+    void RefreshQuotes();
+    void RevealHiddenQuotes();
 }

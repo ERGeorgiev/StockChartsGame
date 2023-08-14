@@ -2,30 +2,30 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Skender.Stock.Indicators;
 using StockChartsGame.Providers.AlphaVantage.Configuration;
-using WebApi.Framework.Services;
+using StockChartsGame.Framework.Services;
 
-namespace WebApi.Controllers;
+namespace StockChartsGame.Controllers;
 
 [ApiController]
 [Route("")]
 public class IndicatorsController : ControllerBase
 {
-    private readonly IGameService quotesProvider;
+    private readonly IGameService gameService;
     private readonly ChartOptions chartOptions;
 
     public IndicatorsController(IGameService quotesProvider, IOptions<ChartOptions> chartOptions)
     {
-        this.quotesProvider = quotesProvider;
+        this.gameService = quotesProvider;
         this.chartOptions = chartOptions.Value;
     }
 
     [HttpGet("EMA")]
-    public async Task<IActionResult> GetEma(
+    public IActionResult GetEma(
         int lookbackPeriods)
     {
         try
         {
-            IEnumerable<Quote> quotes = await quotesProvider.Get();
+            IEnumerable<Quote> quotes = gameService.GetQuotes();
 
             IEnumerable<EmaResult> results =
                 quotes.GetEma(lookbackPeriods)
@@ -40,12 +40,12 @@ public class IndicatorsController : ControllerBase
     }
 
     [HttpGet("RSI")]
-    public async Task<IActionResult> GetRsi(
+    public IActionResult GetRsi(
         int lookbackPeriods = 14)
     {
         try
         {
-            IEnumerable<Quote> quotes = await quotesProvider.Get();
+            IEnumerable<Quote> quotes = gameService.GetQuotes();
 
             IEnumerable<RsiResult> results =
                 quotes.GetRsi(lookbackPeriods)
