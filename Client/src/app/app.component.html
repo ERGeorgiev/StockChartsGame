@@ -1,0 +1,25 @@
+<div [ngClass]="ts.isDarkTheme ? 'dark-theme' : 'light-theme'">
+  <div id="main-content" class="chart-container">
+    <app-chart></app-chart>
+  </div>
+
+  <div class="symbol" id="symbol">SYMBOL</div>
+
+  <div class="skip-container" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="12px">
+    <div>
+      <button mat-fab color="next" (click)="vs.reset()" class="vote-button">
+        <mat-icon color="white">skip_next</mat-icon>
+      </button>
+    </div>
+    <div [style.visibility]="vs.voted? 'hidden': 'visible'">
+      <button mat-fab color="up" (click)="vs.up()" class="vote-button">
+        <mat-icon color="white">arrow_upward</mat-icon>
+      </button>
+    </div>
+    <div [style.visibility]="vs.voted? 'hidden': 'visible'">
+      <button mat-fab color="down" (click)="vs.down()" class="vote-button">
+        <mat-icon color="white">arrow_downward</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

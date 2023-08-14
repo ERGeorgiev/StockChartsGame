@@ -1,0 +1,12 @@
+<!-- loading -->
+<div class="loading-container" style="text-align:center;" [hidden]="!cs.loading">
+  <img src="../assets/spinner.gif" alt="loading" height="50"><br>LOADING
+</div>
+
+<!-- CHART (MAIN OVERLAY) -->
+<div id="chart-overlay" class="chart-overlay-container" [hidden]="cs.loading">
+  <canvas id="chartOverlay"></canvas>
+</div>
+
+<!-- CHART (OSCILLATORS) -->
+<div id="oscillators-zone" [hidden]="cs.loading"></div>
