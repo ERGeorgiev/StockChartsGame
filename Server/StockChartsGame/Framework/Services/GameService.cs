@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Ardalis.GuardClauses;
 using Microsoft.Extensions.Options;
+using StockChartsGame.Framework.Components;
 using StockChartsGame.Providers.AlphaVantage.Configuration;
 using StockChartsGame.Providers.AlphaVantage.Services;
 using StockChartsGame.Providers.Services;
@@ -15,7 +16,7 @@ public class GameService : IGameService
     private readonly Stopwatch lastFetch = new();
     private readonly Random rnd = new();
     private readonly ChartOptions chartOptions;
-    private IQuoteFrameService? quoteFrame;
+    private IQuoteFrame? quoteFrame;
 
     public GameService(IEnumerable<IProvider> providers, IOptions<ChartOptions> chartOptions)
     {
@@ -47,7 +48,7 @@ public class GameService : IGameService
         {
             if (lastFetch.IsRunning == false || lastFetch.Elapsed > TimeSpan.FromSeconds(20))
             {
-                quoteFrame = QuoteFrameService.Create(provider).Result;
+                quoteFrame = QuoteFrame.Create(provider).Result;
                 lastFetch.Restart();
             }
             Revealed = false;

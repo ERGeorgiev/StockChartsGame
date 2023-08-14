@@ -3,29 +3,29 @@ using StockChartsGame.Providers.Series;
 using StockChartsGame.Providers.Services;
 using Quote = Skender.Stock.Indicators.Quote;
 
-namespace StockChartsGame.Framework.Services;
+namespace StockChartsGame.Framework.Components;
 
-public class QuoteFrameService : IQuoteFrameService
+public class QuoteFrame : IQuoteFrame
 {
     private readonly IEnumerable<Quote> quotes;
     private readonly List<int> daysQuoted = new();
     private readonly Random rnd = new();
     private IOrderedEnumerable<Quote> quoteFrame;
 
-    private QuoteFrameService(string symbol, IEnumerable<Quote> quotes)
+    private QuoteFrame(string symbol, IEnumerable<Quote> quotes)
     {
-        this.Symbol = symbol;
+        Symbol = symbol;
         this.quotes = quotes;
-        this.quoteFrame = GetQuoteFrame();
+        quoteFrame = GetQuoteFrame();
     }
     public string Symbol { get; private set; }
 
-    public static async Task<QuoteFrameService> Create(IProvider provider)
+    public static async Task<QuoteFrame> Create(IProvider provider)
     {
         var symbol = provider.Symbols[new Random().Next(0, provider.Symbols.Length)];
         var quotes = await Fetch(provider, symbol);
 
-        return new QuoteFrameService(symbol, quotes);
+        return new QuoteFrame(symbol, quotes);
     }
 
     public void Refresh()
