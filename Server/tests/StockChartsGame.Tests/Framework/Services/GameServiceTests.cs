@@ -42,9 +42,9 @@ public class GameServiceTests
     [Fact]
     public void GetQuotes_ValidInput_ExpectedResult()
     {
-        // var result = sut.GetQuotes();
+        //var result = sut.GetQuotes();
 
-        // result.Should().BeEquivalentTo(presetQuoteTimeSeries);
+        //result.Should().BeEquivalentTo(presetQuoteTimeSeries);
     }
 
     [Fact]

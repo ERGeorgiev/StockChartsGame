@@ -55,38 +55,32 @@ public class QuoteFrame : IQuoteFrame
     private IOrderedEnumerable<Quote> GetQuoteFrame()
     {
         // ToDo: Automatic buffer quotes based on Period (for example how quotes before the cutoff one to give)
-        // ToDo: Configurable priority (for example only aim at 9 to 12)
-        // ToDo: Configurable fill hours (for example 12 to EOD when priority are used up)
-        // ToDo: Automatic buffer between the hours (for example if 9:15 was returned, don't return 9:16 next)
         // ToDo: Handle empty response in the callers
-        var bufferDays = 2;
-        var days = quotes.Select(q => q.Date.DayOfYear).Distinct().ToList();
+        var days = quotes.Select(q => q.Date.TotalDays()).Distinct().ToArray();
         var availableDays = days.Except(daysQuoted).ToArray();
-        List<Quote> dayQuotes;
-        if (availableDays.Length > bufferDays)
+        IEnumerable<Quote> dayQuotes = new List<Quote>();
+
+        if (availableDays.Any())
         {
-            var dayIndex = rnd.Next(bufferDays, availableDays.Length);
-            var day = availableDays[dayIndex];
+            var day = availableDays[rnd.Next(0, availableDays.Length)];
             daysQuoted.Add(day);
-
-            var endMinute = rnd.Next(31, 45) + 15;
-            dayQuotes = quotes.Where(q => q.Date.DayOfYear == day && q.Date.Hour == 9 && q.Date.Minute <= endMinute).ToList();
+            var cutoff = GetCutoffDateTime(day, chartOptions.PriorityHours);
+            if (quotes.Any(q => q.Date.TotalDays() == day && q.Date <= cutoff))
+            {
+                dayQuotes = quotes.Where(q => q.Date <= cutoff);
+            }
         }
-        else
+        if (dayQuotes.Any() == false && days.Any())
         {
-            // ToDo: Revisit
-            var dayIndex = rnd.Next(0, availableDays.Length);
-            var day = availableDays[dayIndex];
-
-            dayQuotes = quotes.Where(q => q.Date.DayOfYear == day && q.Date.Hour >= 10 && q.Date.Hour < 14).ToList();
+            var day = days[rnd.Next(0, days.Length)];
+            var cutoff = GetCutoffDateTime(day, chartOptions.FallbackHours);
+            if (quotes.Any(q => q.Date.TotalDays() == day && q.Date <= cutoff))
+            {
+                dayQuotes = quotes.Where(q => q.Date <= cutoff);
+            }
         }
 
-        if (dayQuotes.Any() == false) return new List<Quote>().OrderBy(q => q);
-
-        var dayQuotesStart = dayQuotes.Min(q => q.Date);
-        var finalQuotes = quotes.Where(q => q.Date < dayQuotesStart).Concat(dayQuotes).OrderBy(x => x.Date);
-
-        return finalQuotes;
+        return dayQuotes.OrderBy(q => q.Date);
     }
 
     private static async Task<IEnumerable<Quote>> Fetch(IProvider provider, string symbol)
@@ -103,5 +97,23 @@ public class QuoteFrame : IQuoteFrame
         });
 
         return quotes;
+    }
+
+    private DateTime GetCutoffDateTime(int cutoffDay, KeyValuePair<DateTime, DateTime> hours)
+    {
+        var cutoffDateTime = new DateTime().AddDays(cutoffDay);
+        var cutoffHour = RandomDateBetweenDates(hours.Key, hours.Value);
+        cutoffDateTime += new TimeSpan(cutoffHour.Hour, cutoffHour.Minute, cutoffHour.Second);
+
+        return cutoffDateTime;
+    }
+
+    private DateTime RandomDateBetweenDates(DateTime min, DateTime max)
+    {
+        TimeSpan timeSpan = max - min;
+        TimeSpan span = new(0, rnd.Next(0, (int)timeSpan.TotalMinutes), 0);
+        DateTime newDate = min + span;
+
+        return newDate;
     }
 }

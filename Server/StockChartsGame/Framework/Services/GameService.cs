@@ -49,11 +49,11 @@ public class GameService : IGameService
     {
         lock (quoteFrameLock)
         {
+            Revealed = false;
             if (quoteFrame == null || lastFetch.IsRunning == false || lastFetch.Elapsed > TimeSpan.FromSeconds(20))
             {
                 quoteFrame = QuoteFrame.Create(provider, chartOptions).Result;
                 lastFetch.Restart();
-                Revealed = false;
             }
             else
             {
