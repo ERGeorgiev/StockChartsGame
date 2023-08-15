@@ -1,4 +1,4 @@
-namespace StockChartsGame.Providers.Tests.Series;
+namespace StockChartsGame.Providers.Tests.AlphaVantage;
 
 public class AlphaVantageClientTests
 {
