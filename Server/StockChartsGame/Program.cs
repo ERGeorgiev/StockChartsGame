@@ -3,6 +3,7 @@ using StockChartsGame.Providers.AlphaVantage.Configuration;
 using StockChartsGame.Providers.AlphaVantage.Services;
 using StockChartsGame.Providers.Services;
 using StockChartsGame.Framework.Services;
+using StockChartsGame.Framework.Components;
 
 Environment.SetEnvironmentVariable("Browser", "none");
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -19,13 +20,6 @@ services.AddControllers()
 // setup CORS for website
 IConfigurationSection corsOrigins = configuration.GetSection("CorsOrigins");
 
-// WebApi
-services.Configure<ChartOptions>(configuration.GetSection(ChartOptions.Section));
-services.Configure<GameOptions>(configuration.GetSection(GameOptions.Section));
-
-// Providers
-services.Configure<AlphaVantageOptions>(configuration.GetSection(AlphaVantageOptions.Section));
-
 services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy",
@@ -37,6 +31,15 @@ services.AddCors(options =>
     });
 });
 
+// WebApi
+services.Configure<ChartOptions>(configuration.GetSection(ChartOptions.Section));
+services.Configure<GameOptions>(configuration.GetSection(GameOptions.Section));
+
+// Providers
+services.Configure<AlphaVantageOptions>(configuration.GetSection(AlphaVantageOptions.Section));
+
+// Main
+services.AddSingleton<IQuoteFrameFactory, QuoteFrameFactory>();
 services.AddSingleton<IProvider, AlphaVantageClient>();
 services.AddSingleton<IGameService, GameService>();
 

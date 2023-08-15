@@ -11,16 +11,19 @@ namespace StockChartsGame.Framework.Services;
 
 public class GameService : IGameService
 {
-    private readonly object quoteFrameLock = new();
     private readonly IProvider provider;
+    private readonly IQuoteFrameFactory quoteFrameFactory;
+    private readonly ChartOptions chartOptions;
+
+    private readonly object quoteFrameLock = new();
     private readonly Stopwatch lastFetch = new();
     private readonly Random rnd = new();
-    private readonly ChartOptions chartOptions;
     private IQuoteFrame? quoteFrame;
 
-    public GameService(IEnumerable<IProvider> providers, IOptions<ChartOptions> chartOptions)
+    public GameService(IEnumerable<IProvider> providers, IQuoteFrameFactory quoteFrameFactory, IOptions<ChartOptions> chartOptions)
     {
         this.provider = providers.Single(p => p.Name == nameof(AlphaVantageClient));
+        this.quoteFrameFactory = quoteFrameFactory;
         this.chartOptions = chartOptions.Value;
     }
 
@@ -52,7 +55,7 @@ public class GameService : IGameService
             Revealed = false;
             if (quoteFrame == null || lastFetch.IsRunning == false || lastFetch.Elapsed > TimeSpan.FromSeconds(20))
             {
-                quoteFrame = QuoteFrame.Create(provider, chartOptions).Result;
+                quoteFrame = quoteFrameFactory.Create(provider, chartOptions).Result;
                 lastFetch.Restart();
             }
             else

@@ -15,7 +15,7 @@ public class QuoteFrame : IQuoteFrame
     private readonly Random rnd = new();
     private IOrderedEnumerable<Quote> quoteFrame;
 
-    private QuoteFrame(string symbol, IEnumerable<Quote> quotes, ChartOptions chartOptions)
+    public QuoteFrame(string symbol, IEnumerable<Quote> quotes, ChartOptions chartOptions)
     {
         this.Symbol = symbol;
         this.quotes = quotes;
@@ -23,14 +23,6 @@ public class QuoteFrame : IQuoteFrame
         this.quoteFrame = GetQuoteFrame();
     }
     public string Symbol { get; private set; }
-
-    public static async Task<QuoteFrame> Create(IProvider provider, ChartOptions chartOptions)
-    {
-        var symbol = provider.Symbols[new Random().Next(0, provider.Symbols.Length)];
-        var quotes = await Fetch(provider, symbol);
-
-        return new QuoteFrame(symbol, quotes, chartOptions);
-    }
 
     public void Refresh()
     {
@@ -54,7 +46,6 @@ public class QuoteFrame : IQuoteFrame
 
     private IOrderedEnumerable<Quote> GetQuoteFrame()
     {
-        // ToDo: Automatic buffer quotes based on Period (for example how quotes before the cutoff one to give)
         // ToDo: Handle empty response in the callers
         var days = quotes.Select(q => q.Date.TotalDays()).Distinct().ToArray();
         var availableDays = days.Except(daysQuoted).ToArray();
@@ -81,22 +72,6 @@ public class QuoteFrame : IQuoteFrame
         }
 
         return dayQuotes.OrderBy(q => q.Date);
-    }
-
-    private static async Task<IEnumerable<Quote>> Fetch(IProvider provider, string symbol)
-    {
-        QuoteTimeSeries timeSeries = await provider.GetTimeSeriesIntradayAsync(symbol);
-        var quotes = timeSeries.Select(x => new Quote()
-        {
-            Close = Math.Round((decimal)x.Price, 2),
-            Date = x.Date,
-            High = Math.Round((decimal)x.High, 2),
-            Low = Math.Round((decimal)x.Low, 2),
-            Open = Math.Round((decimal)x.Open, 2),
-            Volume = x.Volume
-        });
-
-        return quotes;
     }
 
     private DateTime GetCutoffDateTime(int cutoffDay, KeyValuePair<DateTime, DateTime> hours)
