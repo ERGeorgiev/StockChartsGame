@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using Moq;
 using StockChartsGame.Framework.Components;
 using StockChartsGame.Framework.Services;
 using StockChartsGame.Providers.AlphaVantage.Configuration;
@@ -7,7 +6,6 @@ using StockChartsGame.Providers.AlphaVantage.Services;
 using StockChartsGame.Providers.Models;
 using StockChartsGame.Providers.Series;
 using StockChartsGame.Providers.Services;
-using SkenderQuote = Skender.Stock.Indicators.Quote;
 
 namespace StockChartsGame.Tests.Framework.Services;
 
@@ -30,10 +28,10 @@ public class GameServiceTests
         {
             new Quote(1, 1, 1, 1, 1, DateTime.MinValue + TimeSpan.FromSeconds(1)),
             new Quote(1, 1, 1, 1, 1, DateTime.MinValue + TimeSpan.FromSeconds(10)),
-            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + TimeSpan.FromSeconds(1)),
-            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + TimeSpan.FromSeconds(10))
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + TimeSpan.FromDays(1) + TimeSpan.FromSeconds(1)),
+            new Quote(1, 1, 1, 1, 1, DateTime.MinValue + TimeSpan.FromDays(1) + TimeSpan.FromSeconds(10))
         };
-        this.presetQuoteTimeSeries = new QuoteTimeSeries(inputQuotes, TimeSpan.FromSeconds(10));
+        this.presetQuoteTimeSeries = new QuoteTimeSeries(inputQuotes, TimeSpan.FromSeconds(1));
         this.providerMock.Setup(p => p.GetTimeSeriesIntradayAsync(providerSymbol)).Returns(Task.FromResult(presetQuoteTimeSeries));
 
         gameServiceChartOptions = new ChartOptions();

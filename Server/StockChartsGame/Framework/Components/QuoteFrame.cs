@@ -1,7 +1,5 @@
 using System.Collections;
 using StockChartsGame.Providers.AlphaVantage.Configuration;
-using StockChartsGame.Providers.Series;
-using StockChartsGame.Providers.Services;
 using Quote = Skender.Stock.Indicators.Quote;
 
 namespace StockChartsGame.Framework.Components;
@@ -22,6 +20,7 @@ public class QuoteFrame : IQuoteFrame
         this.chartOptions = chartOptions;
         this.quoteFrame = GetQuoteFrame();
     }
+
     public string Symbol { get; private set; }
 
     public void Refresh()
